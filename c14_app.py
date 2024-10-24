@@ -31,17 +31,27 @@ def uncertainty_func(mu, variance):
     return df
     
 def save_plot(years, error):
-        r = R(years, error, 'P-769')
-        cal_r = r.calibrate('intcal20')
-        
-        # Create the plot using iplot
-        iplot(cal_r)
-        
-        # Save the current figure as a PNG file
-        plot_path = os.path.join('static', 'calibrated_plot.png')
-        plt.savefig(plot_path, format='png')
-        # plt.close()  # Close the plot to free memory
-        st.image(plot_path, caption='Calibrated Plot', use_column_width=True)
+    # Radiocarbon calibration
+    r = R(years, error, 'P-769')
+    cal_r = r.calibrate('intcal20')
+    
+    # Create the plot using iplot
+    iplot(cal_r)
+    
+    # Create an in-memory bytes buffer
+    buf = io.BytesIO()
+    
+    # Save the current figure as a PNG to the buffer
+    plt.savefig(buf, format='png')
+    
+    # Close the plot to free memory
+    plt.close()
+    
+    # Move to the beginning of the buffer so it can be read from
+    buf.seek(0)
+    
+    # Display the image in Streamlit directly from the buffer
+    st.image(buf, caption='Calibrated Plot', use_column_width=True)
 
 
 
